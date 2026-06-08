@@ -3,8 +3,8 @@ import "./globals.css";
 import ScrollToTop from "@/components/ScrollToTop";
 
 export const metadata: Metadata = {
-  title: "LinkPro — Capture de Leads",
-  description: "Sistema de links com captura de leads integrada",
+  title: "Biteti Indicações",
+  description: "Biteti Indicações",
   other: {
     "format-detection": "telephone=no, email=no, address=no",
   },
