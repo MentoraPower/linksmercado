@@ -141,6 +141,15 @@ export default function LeadsPage() {
     <div className="relative z-10 min-h-screen">
       <div className="max-w-7xl mx-auto px-6 pt-10 pb-10">
 
+        {/* Product name */}
+        {link && (
+          <p className="text-sm font-semibold mb-6" style={{ letterSpacing: "0.04em" }}>
+            <span style={{ color: "#ffe033" }}>[</span>
+            <span className="text-white mx-2">{link.name}</span>
+            <span style={{ color: "#ffe033" }}>]</span>
+          </p>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-white">Contatos</h1>
