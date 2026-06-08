@@ -69,7 +69,7 @@ export default function CreateLinkModal({ onClose, onCreated, showToast }: Props
             <label className="field-label">Nome do Produto</label>
             <input
               className="glass-input"
-              placeholder="Ex: Curso de Marketing Digital"
+              placeholder="Produto X"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required

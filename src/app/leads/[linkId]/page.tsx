@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ChevronDown, FileSpreadsheet, FileText } from "lucide-react";
 import type { Lead, ProductLink } from "@/lib/supabase";
@@ -35,15 +35,22 @@ export default function LeadsPage() {
   const [exportOpen, setExportOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    Promise.all([
+  const fetchData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
+    const [leadsData, linkData] = await Promise.all([
       fetch(`/api/leads/${linkId}`).then(r => r.json()),
       fetch(`/api/links?id=${linkId}`).then(r => r.json()),
-    ]).then(([leadsData, linkData]) => {
-      setLeads(leadsData.leads || []);
-      setLink(linkData.link || null);
-    }).finally(() => setLoading(false));
+    ]);
+    setLeads(leadsData.leads || []);
+    setLink(linkData.link || null);
+    setLoading(false);
   }, [linkId]);
+
+  useEffect(() => {
+    fetchData();
+    const interval = setInterval(() => fetchData(true), 5000);
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
   useEffect(() => {
     function handle(e: MouseEvent) {
