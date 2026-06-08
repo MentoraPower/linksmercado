@@ -49,7 +49,6 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
       >
         {/* Title */}
         <div className="text-center mb-8">
-          <h1 className="text-lg font-bold text-white mb-1">Área restrita</h1>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
             Digite a senha para continuar
           </p>
