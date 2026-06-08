@@ -222,6 +222,7 @@ export default function PhoneInput({ onChange, required }: Props) {
   const [localNum, setLocalNum] = useState("");
   const dropRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     onChange(localNum ? `${selected.dial} ${localNum}` : "");
@@ -267,12 +268,14 @@ export default function PhoneInput({ onChange, required }: Props) {
           WebkitBackdropFilter: "blur(12px)",
           border: "1px solid rgba(255,255,255,0.09)",
           height: 54,
+          cursor: "text",
         }}
+        onClick={() => inputRef.current?.focus()}
       >
         {/* Flag button */}
         <button
           type="button"
-          onClick={() => setOpen(v => !v)}
+          onClick={(e) => { e.stopPropagation(); setOpen(v => !v); }}
           className="flex items-center justify-center shrink-0 h-full"
           style={{ width: 52 }}
         >
@@ -297,13 +300,14 @@ export default function PhoneInput({ onChange, required }: Props) {
             {selected.dial}
           </span>
           <input
+            ref={inputRef}
             type="tel"
             placeholder="Telefone"
             value={localNum}
             onChange={e => setLocalNum(formatLocal(e.target.value))}
             required={required}
             className="flex-1 bg-transparent outline-none text-white placeholder-white/20"
-            style={{ fontSize: 16, fontFamily: "'Instrument Sans', sans-serif" }}
+            style={{ fontSize: 16, fontFamily: "'Instrument Sans', sans-serif", cursor: "text" }}
           />
         </div>
       </div>
