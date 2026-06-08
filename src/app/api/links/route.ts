@@ -2,7 +2,16 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 
-function generateSlug(length = 8) {
+function nameToSlug(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+function generateSlug(length = 6) {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
@@ -49,12 +58,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nome e URL são obrigatórios" }, { status: 400 });
   }
 
-  let slug = generateSlug();
+  let slug = nameToSlug(name) || generateSlug();
   let attempts = 0;
   while (attempts < 5) {
     const { data } = await db.from("product_links").select("id").eq("slug", slug).single();
     if (!data) break;
-    slug = generateSlug();
+    slug = nameToSlug(name) + "-" + generateSlug(4);
     attempts++;
   }
 
