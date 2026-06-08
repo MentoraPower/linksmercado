@@ -303,7 +303,7 @@ export default function PhoneInput({ onChange, required }: Props) {
             onChange={e => setLocalNum(formatLocal(e.target.value))}
             required={required}
             className="flex-1 bg-transparent outline-none text-white placeholder-white/20"
-            style={{ fontSize: 14, fontFamily: "'Instrument Sans', sans-serif" }}
+            style={{ fontSize: 16, fontFamily: "'Instrument Sans', sans-serif" }}
           />
         </div>
       </div>

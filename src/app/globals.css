@@ -71,7 +71,7 @@ body {
   width: 100%;
   padding: 12px 16px;
   font-family: "Instrument Sans", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
 }
 .glass-input-plain::placeholder { color: rgba(255, 255, 255, 0.3); }
@@ -88,7 +88,7 @@ body {
   width: 100%;
   padding: 15px 16px;
   font-family: "Instrument Sans", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
 }
 
