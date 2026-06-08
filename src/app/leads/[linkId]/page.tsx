@@ -218,52 +218,52 @@ export default function LeadsPage() {
             <p className="text-white/25 text-sm">Compartilhe o link de captura para começar</p>
           </div>
         ) : (
-          <div
-            className="w-full rounded-2xl overflow-hidden"
-            style={{ border: "1px solid rgba(255,255,255,0.07)" }}
-          >
-            {/* Column headers */}
-            <div
-              className="grid w-full"
-              style={{
-                gridTemplateColumns: "48px 1fr 1fr 160px 170px",
-                background: "rgba(255,255,255,0.03)",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-                padding: "12px 20px",
-              }}
-            >
-              {["#", "Nome", "Email", "Telefone", "Cadastrado em"].map(col => (
-                <span key={col} style={{
-                  fontSize: 11, fontWeight: 700,
-                  textTransform: "uppercase", letterSpacing: "0.07em",
-                  color: "rgba(255,255,255,0.35)",
-                }}>
-                  {col}
-                </span>
-              ))}
-            </div>
-
-            {/* Rows */}
-            {leads.map((lead, i) => (
+          <div className="w-full overflow-x-auto rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ minWidth: 640 }}>
+              {/* Column headers */}
               <div
-                key={lead.id}
                 className="grid w-full"
                 style={{
-                  gridTemplateColumns: "48px 1fr 1fr 160px 170px",
-                  padding: "14px 20px",
-                  borderBottom: i < leads.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                  transition: "background 0.15s",
+                  gridTemplateColumns: "44px 180px 220px 150px 160px",
+                  background: "rgba(255,255,255,0.03)",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  padding: "12px 20px",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
-                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.25)" }}>{i + 1}</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>{lead.name}</span>
-                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)" }}>{lead.email}</span>
-                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)" }}>{withDDI(lead.phone)}</span>
-                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.35)" }}>{formatDateShort(lead.created_at)}</span>
+                {["#", "Nome", "Email", "Telefone", "Cadastrado em"].map(col => (
+                  <span key={col} style={{
+                    fontSize: 11, fontWeight: 700,
+                    textTransform: "uppercase", letterSpacing: "0.07em",
+                    color: "rgba(255,255,255,0.35)",
+                    whiteSpace: "nowrap",
+                  }}>
+                    {col}
+                  </span>
+                ))}
               </div>
-            ))}
+
+              {/* Rows */}
+              {leads.map((lead, i) => (
+                <div
+                  key={lead.id}
+                  className="grid w-full"
+                  style={{
+                    gridTemplateColumns: "44px 180px 220px 150px 160px",
+                    padding: "14px 20px",
+                    borderBottom: i < leads.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.25)" }}>{i + 1}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</span>
+                  <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: "none" }}>{lead.email}</span>
+                  <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>{withDDI(lead.phone)}</span>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>{formatDateShort(lead.created_at)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
