@@ -65,13 +65,14 @@ export default function CapturePage() {
           phone: phone.trim(),
         }),
       });
-      if (!res.ok) throw new Error("Erro ao salvar dados");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Erro ao salvar dados");
       setDone(true);
       setTimeout(() => {
         window.location.href = linkData.destination_url;
       }, 1800);
-    } catch {
-      setError("Ocorreu um erro. Tente novamente.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Ocorreu um erro. Tente novamente.");
     } finally {
       setSubmitting(false);
     }

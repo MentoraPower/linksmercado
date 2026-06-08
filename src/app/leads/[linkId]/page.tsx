@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, ChevronDown, FileSpreadsheet, FileText } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 import type { Lead, ProductLink } from "@/lib/supabase";
 import PasswordGate from "@/components/PasswordGate";
 
@@ -32,25 +33,52 @@ export default function LeadsPage() {
   const [link, setLink] = useState<ProductLink | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
 
   const fetchData = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
-    const [leadsData, linkData] = await Promise.all([
-      fetch(`/api/leads/${linkId}`).then(r => r.json()),
-      fetch(`/api/links?id=${linkId}`).then(r => r.json()),
-    ]);
-    setLeads(leadsData.leads || []);
-    setLink(linkData.link || null);
-    setLoading(false);
+    try {
+      const [leadsRes, linkRes] = await Promise.all([
+        fetch(`/api/leads/${linkId}`),
+        fetch(`/api/links?id=${linkId}`),
+      ]);
+      const [leadsData, linkData] = await Promise.all([leadsRes.json(), linkRes.json()]);
+      if (leadsData.error) { setFetchError(leadsData.error); } else { setFetchError(""); }
+      setLeads(leadsData.leads || []);
+      setLink(linkData.link || null);
+    } catch (e) {
+      setFetchError(e instanceof Error ? e.message : "Erro ao buscar dados");
+    } finally {
+      setLoading(false);
+    }
   }, [linkId]);
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(() => fetchData(true), 5000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+
+    // Realtime subscription — fires instantly on new lead
+    const channel = supabase
+      .channel(`leads-${linkId}`)
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "leads",
+        filter: `product_link_id=eq.${linkId}`,
+      }, (payload) => {
+        setLeads(prev => [payload.new as Lead, ...prev]);
+      })
+      .subscribe();
+
+    // Polling fallback every 3s
+    const interval = setInterval(() => fetchData(true), 3000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, [fetchData, linkId]);
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -168,6 +196,13 @@ export default function LeadsPage() {
             </button>
           </div>
         </div>
+
+        {/* API error */}
+        {fetchError && (
+          <div className="mb-4 px-4 py-3 rounded-xl text-sm" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "rgba(239,68,68,0.9)" }}>
+            Erro: {fetchError}
+          </div>
+        )}
 
         {/* Table */}
         {loading ? (
