@@ -5,10 +5,10 @@ import * as Flags from "country-flag-icons/react/3x2";
 
 type Country = { name: string; code: string; dial: string };
 
-function FlagIcon({ code, ...props }: { code: string } & React.SVGProps<SVGSVGElement>) {
+function FlagIcon({ code, style }: { code: string; style?: React.CSSProperties }) {
   const Flag = Flags[code as keyof typeof Flags];
   if (!Flag) return <span style={{ fontSize: 16 }}>🏳</span>;
-  return <Flag {...props} />;
+  return <Flag style={style} />;
 }
 
 const COUNTRIES: Country[] = [
