@@ -60,6 +60,7 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
             className="glass-input"
             type="password"
             placeholder="Senha de acesso"
+            style={{ fontSize: 16 }}
             value={value}
             onChange={(e) => { setValue(e.target.value); setError(false); }}
             autoFocus
