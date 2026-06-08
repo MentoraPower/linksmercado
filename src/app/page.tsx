@@ -156,7 +156,7 @@ export default function Dashboard() {
 
       {showCreate && (
         <CreateLinkModal
-          onClose={() => setShowCreate(false)}
+          onClose={() => { setShowCreate(false); window.scrollTo(0, 0); }}
           onCreated={fetchLinks}
           showToast={showToast}
         />
@@ -164,7 +164,7 @@ export default function Dashboard() {
       {editLink && (
         <EditLinkModal
           link={editLink}
-          onClose={() => setEditLink(null)}
+          onClose={() => { setEditLink(null); window.scrollTo(0, 0); }}
           onUpdated={fetchLinks}
           showToast={showToast}
         />
