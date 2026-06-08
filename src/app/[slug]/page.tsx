@@ -169,14 +169,15 @@ export default function CapturePage() {
         </div>
       )}
 
+      {linkData && (
+        <p className="text-center text-sm font-semibold mb-6" style={{ letterSpacing: "0.04em" }}>
+          <span style={{ color: "#ffe033" }}>[</span>
+          <span className="text-white mx-2">{linkData.name}</span>
+          <span style={{ color: "#ffe033" }}>]</span>
+        </p>
+      )}
+
       <CornerFrame className="w-full max-w-lg py-12 px-10">
-        {linkData && (
-          <p className="text-center text-sm font-semibold mb-3" style={{ letterSpacing: "0.04em" }}>
-            <span style={{ color: "#ffe033" }}>[</span>
-            <span className="text-white mx-2">{linkData.name}</span>
-            <span style={{ color: "#ffe033" }}>]</span>
-          </p>
-        )}
         <p className="text-center text-base font-semibold mb-8" style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
           Preencha suas informações pra acessar o produto que a Biteti indicou!
         </p>
