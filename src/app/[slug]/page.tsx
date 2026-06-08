@@ -169,6 +169,9 @@ export default function CapturePage() {
       )}
 
       <CornerFrame className="w-full max-w-lg py-12 px-10">
+        <p className="text-center text-base font-semibold mb-8" style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.5 }}>
+          Preencha suas informações pra acessar o produto que a Biteti indicou!
+        </p>
         <form onSubmit={handleSubmit} className="max-w-sm mx-auto space-y-5">
           <div>
             <input

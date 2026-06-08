@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Link2, Search } from "lucide-react";
+import { Plus, Link2, Search, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { ProductLink } from "@/lib/supabase";
 import LinkCard from "@/components/LinkCard";
 import CreateLinkModal from "@/components/CreateLinkModal";
@@ -12,6 +13,7 @@ import PasswordGate from "@/components/PasswordGate";
 type ToastState = { message: string; type: "success" | "error" } | null;
 
 export default function Dashboard() {
+  const router = useRouter();
   const [links, setLinks] = useState<ProductLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -67,6 +69,13 @@ export default function Dashboard() {
           >
             <Plus size={16} />
             Criar Link
+          </button>
+          <button
+            onClick={() => { sessionStorage.removeItem("lp_auth"); router.replace("/acesso"); }}
+            className="btn-ghost w-9 h-9 flex items-center justify-center shrink-0"
+            title="Sair"
+          >
+            <LogOut size={15} />
           </button>
         </div>
 
