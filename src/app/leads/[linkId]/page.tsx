@@ -218,52 +218,34 @@ export default function LeadsPage() {
             <p className="text-white/25 text-sm">Compartilhe o link de captura para começar</p>
           </div>
         ) : (
-          <div className="w-full overflow-x-auto rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ minWidth: 640 }}>
-              {/* Column headers */}
-              <div
-                className="grid w-full"
-                style={{
-                  gridTemplateColumns: "44px 180px 220px 150px 160px",
-                  background: "rgba(255,255,255,0.03)",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  padding: "12px 20px",
-                }}
-              >
-                {["#", "Nome", "Email", "Telefone", "Cadastrado em"].map(col => (
-                  <span key={col} style={{
-                    fontSize: 11, fontWeight: 700,
-                    textTransform: "uppercase", letterSpacing: "0.07em",
-                    color: "rgba(255,255,255,0.35)",
-                    whiteSpace: "nowrap",
-                  }}>
-                    {col}
-                  </span>
+          <div className="w-full overflow-x-auto rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.07)", WebkitOverflowScrolling: "touch" } as React.CSSProperties}>
+            <table style={{ minWidth: 620, width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  {["#", "Nome", "Email", "Telefone", "Cadastrado em"].map(col => (
+                    <th key={col} style={{ padding: "12px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {leads.map((lead, i) => (
+                  <tr
+                    key={lead.id}
+                    style={{ borderBottom: i < leads.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  >
+                    <td style={{ padding: "13px 16px", fontSize: 13, color: "rgba(255,255,255,0.25)", whiteSpace: "nowrap" }}>{i + 1}</td>
+                    <td style={{ padding: "13px 16px", fontSize: 14, fontWeight: 600, color: "#fff", whiteSpace: "nowrap" }}>{lead.name}</td>
+                    <td style={{ padding: "13px 16px", fontSize: 14, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", textDecoration: "none", pointerEvents: "none", userSelect: "text" }}>{lead.email}</td>
+                    <td style={{ padding: "13px 16px", fontSize: 14, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", pointerEvents: "none" }}>{withDDI(lead.phone)}</td>
+                    <td style={{ padding: "13px 16px", fontSize: 13, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>{formatDateShort(lead.created_at)}</td>
+                  </tr>
                 ))}
-              </div>
-
-              {/* Rows */}
-              {leads.map((lead, i) => (
-                <div
-                  key={lead.id}
-                  className="grid w-full"
-                  style={{
-                    gridTemplateColumns: "44px 180px 220px 150px 160px",
-                    padding: "14px 20px",
-                    borderBottom: i < leads.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                >
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.25)" }}>{i + 1}</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{lead.name}</span>
-                  <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textDecoration: "none" }}>{lead.email}</span>
-                  <span style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap" }}>{withDDI(lead.phone)}</span>
-                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.35)", whiteSpace: "nowrap" }}>{formatDateShort(lead.created_at)}</span>
-                </div>
-              ))}
-            </div>
+              </tbody>
+            </table>
           </div>
         )}
 
