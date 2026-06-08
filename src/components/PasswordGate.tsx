@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const KEY = "lp_auth";
 const PWD = "BitetiTec";
@@ -11,6 +12,7 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
   const [shaking, setShaking] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     setAuthed(sessionStorage.getItem(KEY) === "1");
@@ -56,15 +58,25 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
 
         {/* Form */}
         <form onSubmit={submit} className="space-y-4">
-          <input
-            className="glass-input"
-            type="password"
-            placeholder="Senha de acesso"
-            style={{ fontSize: 16 }}
-            value={value}
-            onChange={(e) => { setValue(e.target.value); setError(false); }}
-            autoFocus
-          />
+          <div className="relative">
+            <input
+              className="glass-input pr-12"
+              type={show ? "text" : "password"}
+              placeholder="Senha de acesso"
+              style={{ fontSize: 16 }}
+              value={value}
+              onChange={(e) => { setValue(e.target.value); setError(false); }}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => setShow(v => !v)}
+              className="absolute right-4 top-1/2 -translate-y-1/2"
+              style={{ color: "rgba(255,255,255,0.3)" }}
+            >
+              {show ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
 
           {error && (
             <p className="text-center text-sm" style={{ color: "rgba(239,68,68,0.8)" }}>
