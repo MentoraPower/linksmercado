@@ -22,56 +22,36 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    // Load converteai SDK
-    if (!document.querySelector(`script[src*="smartplayer-wc"]`)) {
+    // SDK
+    if (!document.querySelector(`script[src*="smartplayer-wc/v4/sdk"]`)) {
       const s = document.createElement("script");
       s.src = "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
       s.async = true;
       document.head.appendChild(s);
     }
-    // Preload links
-    const preloads = [
-      { href: `${EMBED_URL}`, as: undefined },
-      { href: `https://scripts.converteai.net/2fe3fa7a-4b6e-44f7-be18-0c3cce42c4c0/players/68223ee79a40b1a0cd9a0cfa/v4/player.js`, as: "script" },
-      { href: "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js", as: "script" },
-    ];
-    preloads.forEach(({ href, as }) => {
-      if (document.querySelector(`link[href="${href}"]`)) return;
-      const l = document.createElement("link");
-      l.rel = "preload";
-      l.href = href;
-      if (as) l.setAttribute("as", as);
-      document.head.appendChild(l);
-    });
+    // Set iframe src directly — more reliable than onLoad in React
+    if (iframeRef.current) {
+      const search = window.location.search || "?";
+      const vl = encodeURIComponent(window.location.href);
+      iframeRef.current.src = `${EMBED_URL}${search}&vl=${vl}`;
+    }
   }, []);
-
-  function loadIframe(e: React.SyntheticEvent<HTMLIFrameElement>) {
-    const iframe = e.currentTarget;
-    iframe.onload = null;
-    const search = typeof window !== "undefined" ? (window.location.search || "?") : "?";
-    const vl = typeof window !== "undefined" ? encodeURIComponent(window.location.href) : "";
-    iframe.src = `${EMBED_URL}${search}&vl=${vl}`;
-  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
-      {/* Video player */}
-      <div id={`${PLAYER_ID}_wrapper`} style={{ margin: "0 auto", width: "100%", maxWidth: 400 }}>
-        <div style={{ position: "relative", paddingTop: "177.77777777777777%", width: "100%" }}>
+      <div style={{ margin: "0 auto", width: "100%", maxWidth: 400 }}>
+        <div style={{ position: "relative", paddingTop: "177.77777777777777%" }}>
           <iframe
             ref={iframeRef}
             id={PLAYER_ID}
             frameBorder={0}
             allowFullScreen
-            src="about:blank"
-            onLoad={loadIframe}
             referrerPolicy="origin"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
           />
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
         <a
           href={destinationUrl}
@@ -85,12 +65,8 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
           href={destinationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-4 text-base font-semibold text-center rounded-xl transition-colors"
-          style={{
-            background: "transparent",
-            border: "1px solid #FFFFFF13",
-            color: "rgba(255,255,255,0.6)",
-          }}
+          className="w-full py-4 text-base font-semibold text-center rounded-xl"
+          style={{ background: "transparent", border: "1px solid #FFFFFF13", color: "rgba(255,255,255,0.6)" }}
         >
           Não quero
         </a>
@@ -113,6 +89,12 @@ export default function CapturePage() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
   const [fieldAlert, setFieldAlert] = useState<string[]>([]);
+
+  // Restore done state on refresh
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`done_${slug}`);
+    if (saved) setDone(true);
+  }, [slug]);
 
   useEffect(() => {
     fetch(`/api/links?slug=${slug}`)
@@ -205,6 +187,7 @@ export default function CapturePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Erro ao salvar dados");
       setDone(true);
+      sessionStorage.setItem(`done_${slug}`, "1");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ocorreu um erro. Tente novamente.");
     } finally {
