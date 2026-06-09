@@ -139,7 +139,7 @@ export default function LeadsPage() {
   return (
     <PasswordGate>
     <div className="relative z-10 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-10">
+      <div className="w-full px-6 pt-10 pb-10">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
