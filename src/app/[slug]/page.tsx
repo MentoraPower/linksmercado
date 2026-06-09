@@ -47,24 +47,18 @@ export default function CapturePage() {
 
   useEffect(() => {
     if (!linkData) return;
+    const watchId = linkData.id;
     const channel = supabase
-      .channel(`link-watch-${linkData.id}`)
-      .on("postgres_changes", {
-        event: "DELETE",
-        schema: "public",
-        table: "product_links",
-        filter: `id=eq.${linkData.id}`,
-      }, () => {
+      .channel(`link-watch-${watchId}`)
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "product_links" }, (payload) => {
+        const deleted = payload.old as { id: string };
+        if (deleted.id !== watchId) return;
         setNotFound(true);
         setLinkData(null);
       })
-      .on("postgres_changes", {
-        event: "UPDATE",
-        schema: "public",
-        table: "product_links",
-        filter: `id=eq.${linkData.id}`,
-      }, (payload) => {
-        const updated = payload.new as { active: boolean };
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "product_links" }, (payload) => {
+        const updated = payload.new as { id: string; active: boolean };
+        if (updated.id !== watchId) return;
         if (updated.active === false) {
           setDeactivated(true);
           setLinkData(null);
@@ -75,7 +69,7 @@ export default function CapturePage() {
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [linkData]);
+  }, [linkData?.id]);
 
   const handlePhoneChange = useCallback((v: string) => setPhone(v), []);
 
