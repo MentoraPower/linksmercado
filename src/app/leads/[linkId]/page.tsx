@@ -249,11 +249,6 @@ export default function LeadsPage() {
           </div>
         )}
 
-        {leads.length > 0 && (
-          <p className="mt-4 text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>
-            {leads.length} contato{leads.length !== 1 ? "s" : ""} no total
-          </p>
-        )}
       </div>
     </div>
     </PasswordGate>
