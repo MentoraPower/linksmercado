@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Edit2, Users, Copy, Trash2, ExternalLink, MoreHorizontal, CopyPlus } from "lucide-react";
 import type { ProductLink } from "@/lib/supabase";
@@ -166,12 +167,16 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
           <MoreHorizontal size={16} />
         </button>
 
-        {open && (
+        {open && typeof document !== "undefined" && createPortal(
           <div
-            className="fixed z-[9999] w-48 rounded-xl overflow-hidden"
             style={{
+              position: "fixed",
               top: dropPos.top,
               right: dropPos.right,
+              zIndex: 99999,
+              width: 192,
+              borderRadius: 12,
+              overflow: "hidden",
               background: "rgba(14,14,14,0.97)",
               border: "1px solid rgba(255,255,255,0.09)",
               boxShadow: "0 16px 40px rgba(0,0,0,0.6)",
@@ -251,7 +256,8 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
                 {deleting ? "Deletando..." : "Confirmar exclusão"}
               </button>
             )}
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>
