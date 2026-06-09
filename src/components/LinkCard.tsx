@@ -116,18 +116,23 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
         onClick={handleToggle}
         disabled={toggling}
         title={active ? "Desativar link" : "Ativar link"}
-        className="shrink-0 relative"
         style={{
+          flexShrink: 0,
+          position: "relative",
           width: 40,
           height: 22,
           borderRadius: 11,
           background: active ? "#22c55e" : "rgba(255,255,255,0.12)",
           border: "none",
+          outline: "none",
+          appearance: "none",
+          WebkitAppearance: "none",
           cursor: toggling ? "wait" : "pointer",
           transition: "background 0.25s ease",
           opacity: toggling ? 0.6 : 1,
           padding: 0,
-        }}
+          overflow: "hidden",
+        } as React.CSSProperties}
       >
         <span
           style={{
