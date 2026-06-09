@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Plus, Link2, Search, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ProductLink } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import LinkCard from "@/components/LinkCard";
 import CreateLinkModal from "@/components/CreateLinkModal";
 import EditLinkModal from "@/components/EditLinkModal";
@@ -37,6 +38,21 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchLinks();
+
+    const channel = supabase
+      .channel("product_links_realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "product_links" }, () => {
+        fetchLinks();
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "product_links" }, () => {
+        fetchLinks();
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "product_links" }, (payload) => {
+        setLinks(prev => prev.filter(l => l.id !== (payload.old as ProductLink).id));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [fetchLinks]);
 
   const filtered = links.filter((l) =>
