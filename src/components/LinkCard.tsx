@@ -23,7 +23,9 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
   const [toggling, setToggling] = useState(false);
   const [active, setActive] = useState(link.active ?? true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [dropPos, setDropPos] = useState({ top: 0, right: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const captureUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/${link.slug}`;
 
@@ -129,7 +131,15 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
       {/* 3 pontinhos */}
       <div className="relative shrink-0" ref={menuRef}>
         <button
-          onClick={() => { setOpen(!open); setShowDeleteConfirm(false); }}
+          ref={btnRef}
+          onClick={() => {
+            if (!open && btnRef.current) {
+              const r = btnRef.current.getBoundingClientRect();
+              setDropPos({ top: r.bottom + 6, right: window.innerWidth - r.right });
+            }
+            setOpen(!open);
+            setShowDeleteConfirm(false);
+          }}
           className="btn-ghost w-8 h-8 flex items-center justify-center rounded-lg"
         >
           <MoreHorizontal size={16} />
@@ -137,8 +147,10 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
 
         {open && (
           <div
-            className="absolute right-0 top-10 z-50 w-48 rounded-xl overflow-hidden"
+            className="fixed z-50 w-48 rounded-xl overflow-hidden"
             style={{
+              top: dropPos.top,
+              right: dropPos.right,
               background: "rgba(14,14,14,0.97)",
               border: "1px solid rgba(255,255,255,0.09)",
               boxShadow: "0 16px 40px rgba(0,0,0,0.6)",
