@@ -93,24 +93,37 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
         {formatDate(link.created_at)}
       </span>
 
-      {/* Toggle ativo/inativo */}
+      {/* Toggle switch */}
       <button
         onClick={handleToggle}
         disabled={toggling}
         title={active ? "Desativar link" : "Ativar link"}
-        className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+        className="shrink-0 relative"
         style={{
-          background: active ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
-          color: active ? "#4ade80" : "rgba(239,68,68,0.7)",
-          border: `1px solid ${active ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.15)"}`,
-          opacity: toggling ? 0.5 : 1,
+          width: 40,
+          height: 22,
+          borderRadius: 11,
+          background: active ? "#22c55e" : "rgba(255,255,255,0.12)",
+          border: "none",
+          cursor: toggling ? "wait" : "pointer",
+          transition: "background 0.25s ease",
+          opacity: toggling ? 0.6 : 1,
+          padding: 0,
         }}
       >
         <span
-          className="w-1.5 h-1.5 rounded-full"
-          style={{ background: active ? "#4ade80" : "rgba(239,68,68,0.7)" }}
+          style={{
+            position: "absolute",
+            top: 3,
+            left: active ? 21 : 3,
+            width: 16,
+            height: 16,
+            borderRadius: "50%",
+            background: "#fff",
+            transition: "left 0.25s ease",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+          }}
         />
-        {active ? "Ativo" : "Inativo"}
       </button>
 
       {/* 3 pontinhos */}
