@@ -168,7 +168,7 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
 
         {open && (
           <div
-            className="fixed z-50 w-48 rounded-xl overflow-hidden"
+            className="fixed z-[9999] w-48 rounded-xl overflow-hidden"
             style={{
               top: dropPos.top,
               right: dropPos.right,

@@ -150,8 +150,8 @@ export default function Dashboard() {
               >
                 <span className="flex-1" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)" }}>Nome</span>
                 <span className="shrink-0" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)" }}>Criado em</span>
-                <span style={{ width: 72 }} />
-                <span style={{ width: 32 }} />
+                <span className="shrink-0" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)", width: 40, textAlign: "center" }}>Ativa</span>
+                <span className="shrink-0" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)", width: 32, textAlign: "center" }}>Ações</span>
               </div>
 
               {/* Rows */}
