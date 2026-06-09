@@ -33,7 +33,7 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
     if (iframeRef.current) {
       const search = window.location.search || "?";
       const vl = encodeURIComponent(window.location.href);
-      iframeRef.current.src = `${EMBED_URL}${search}&vl=${vl}`;
+      iframeRef.current.src = `${EMBED_URL}${search}&vl=${vl}&autoplay=1`;
     }
   }, []);
 
@@ -46,6 +46,7 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
             id={PLAYER_ID}
             frameBorder={0}
             allowFullScreen
+            allow="autoplay; fullscreen"
             referrerPolicy="origin"
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
           />
