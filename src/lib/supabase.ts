@@ -15,6 +15,7 @@ export type ProductLink = {
   destination_url: string;
   slug: string;
   created_at: string;
+  active: boolean;
   leads_count?: number;
 };
 

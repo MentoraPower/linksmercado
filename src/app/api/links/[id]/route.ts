@@ -25,6 +25,25 @@ export async function PUT(
   return NextResponse.json({ link: data });
 }
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const db = supabaseAdmin();
+  const body = await req.json();
+  const { active } = body;
+
+  const { data, error } = await db
+    .from("product_links")
+    .update({ active })
+    .eq("id", params.id)
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ link: data });
+}
+
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: { id: string } }

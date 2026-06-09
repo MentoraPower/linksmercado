@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import PhoneInput from "@/components/PhoneInput";
 import EmailInput from "@/components/EmailInput";
 import CornerFrame from "@/components/CornerFrame";
+import { supabase } from "@/lib/supabase";
 
 type LinkData = {
   id: string;
@@ -18,6 +19,7 @@ export default function CapturePage() {
   const { slug } = useParams<{ slug: string }>();
   const [linkData, setLinkData] = useState<LinkData | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [deactivated, setDeactivated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
@@ -32,12 +34,48 @@ export default function CapturePage() {
     fetch(`/api/links?slug=${slug}`)
       .then((r) => r.json())
       .then((d) => {
-        if (d.link) setLinkData(d.link);
-        else setNotFound(true);
+        if (d.link) {
+          if (d.link.active === false) { setDeactivated(true); }
+          else { setLinkData(d.link); }
+        } else {
+          setNotFound(true);
+        }
       })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    if (!linkData) return;
+    const channel = supabase
+      .channel(`link-watch-${linkData.id}`)
+      .on("postgres_changes", {
+        event: "DELETE",
+        schema: "public",
+        table: "product_links",
+        filter: `id=eq.${linkData.id}`,
+      }, () => {
+        setNotFound(true);
+        setLinkData(null);
+      })
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "product_links",
+        filter: `id=eq.${linkData.id}`,
+      }, (payload) => {
+        const updated = payload.new as { active: boolean };
+        if (updated.active === false) {
+          setDeactivated(true);
+          setLinkData(null);
+        } else {
+          setDeactivated(false);
+          setLinkData(prev => prev ? { ...prev, ...payload.new } : prev);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [linkData]);
 
   const handlePhoneChange = useCallback((v: string) => setPhone(v), []);
 
@@ -90,19 +128,20 @@ export default function CapturePage() {
     );
   }
 
+  if (deactivated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 px-4">
+        <h1 className="text-2xl font-bold text-white">Este link foi desativado</h1>
+        <p className="text-white/40 text-center">Tente novamente mais tarde.</p>
+      </div>
+    );
+  }
+
   if (notFound) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
-        <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center"
-          style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
-        >
-          <span className="text-4xl">🔍</span>
-        </div>
-        <h1 className="text-2xl font-bold text-white">Link não encontrado</h1>
-        <p className="text-white/40 text-center">
-          Este link não existe ou foi removido.
-        </p>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 px-4">
+        <h1 className="text-2xl font-bold text-white">Este link foi excluído!</h1>
+        <p className="text-white/40 text-center">Este link não existe ou foi removido.</p>
       </div>
     );
   }

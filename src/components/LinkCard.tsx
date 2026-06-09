@@ -20,10 +20,16 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [toggling, setToggling] = useState(false);
+  const [active, setActive] = useState(link.active ?? true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const captureUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/${link.slug}`;
+
+  useEffect(() => {
+    setActive(link.active ?? true);
+  }, [link.active]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -40,6 +46,25 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
     navigator.clipboard.writeText(captureUrl);
     showToast("Link copiado!", "success");
     setOpen(false);
+  }
+
+  async function handleToggle() {
+    setToggling(true);
+    const newActive = !active;
+    try {
+      const res = await fetch(`/api/links/${link.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: newActive }),
+      });
+      if (!res.ok) throw new Error();
+      setActive(newActive);
+      showToast(newActive ? "Link ativado!" : "Link desativado!", "success");
+    } catch {
+      showToast("Erro ao atualizar link", "error");
+    } finally {
+      setToggling(false);
+    }
   }
 
   async function handleDelete() {
@@ -59,20 +84,37 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
   }
 
   return (
-    <div
-      className="w-full grid px-5 py-4 items-center"
-      style={{ gridTemplateColumns: "1fr 140px 40px" }}
-    >
+    <div className="w-full flex items-center px-5 py-4 gap-3" style={{ minWidth: 0 }}>
       {/* Nome */}
-      <span className="font-semibold text-white text-sm truncate">{link.name}</span>
+      <span className="font-semibold text-white text-sm truncate flex-1">{link.name}</span>
 
       {/* Data */}
-      <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
+      <span className="text-sm shrink-0" style={{ color: "rgba(255,255,255,0.4)" }}>
         {formatDate(link.created_at)}
       </span>
 
+      {/* Toggle ativo/inativo */}
+      <button
+        onClick={handleToggle}
+        disabled={toggling}
+        title={active ? "Desativar link" : "Ativar link"}
+        className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+        style={{
+          background: active ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.1)",
+          color: active ? "#4ade80" : "rgba(239,68,68,0.7)",
+          border: `1px solid ${active ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.15)"}`,
+          opacity: toggling ? 0.5 : 1,
+        }}
+      >
+        <span
+          className="w-1.5 h-1.5 rounded-full"
+          style={{ background: active ? "#4ade80" : "rgba(239,68,68,0.7)" }}
+        />
+        {active ? "Ativo" : "Inativo"}
+      </button>
+
       {/* 3 pontinhos */}
-      <div className="relative shrink-0 ml-3" ref={menuRef}>
+      <div className="relative shrink-0" ref={menuRef}>
         <button
           onClick={() => { setOpen(!open); setShowDeleteConfirm(false); }}
           className="btn-ghost w-8 h-8 flex items-center justify-center rounded-lg"

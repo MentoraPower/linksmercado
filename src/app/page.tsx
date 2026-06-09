@@ -136,45 +136,39 @@ export default function Dashboard() {
         ) : (
           <div
             className="w-full rounded-2xl"
-            style={{ border: "1px solid rgba(255,255,255,0.07)", overflow: "visible" }}
+            style={{ border: "1px solid rgba(255,255,255,0.07)", overflowX: "auto", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
           >
-            {/* Header de colunas */}
-            <div
-              className="grid w-full px-5 py-3"
-              style={{
-                gridTemplateColumns: "1fr 140px 40px",
-                background: "rgba(255,255,255,0.03)",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "16px 16px 0 0",
-              }}
-            >
-              {["Nome", "Criado em", ""].map((col) => (
-                <span key={col} style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.07em",
-                  color: "rgba(255,255,255,0.35)",
-                }}>
-                  {col}
-                </span>
+            <div style={{ minWidth: 420 }}>
+              {/* Header de colunas */}
+              <div
+                className="flex items-center px-5 py-3 gap-3"
+                style={{
+                  background: "rgba(255,255,255,0.03)",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: "16px 16px 0 0",
+                }}
+              >
+                <span className="flex-1" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)" }}>Nome</span>
+                <span className="shrink-0" style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "rgba(255,255,255,0.35)" }}>Criado em</span>
+                <span style={{ width: 72 }} />
+                <span style={{ width: 32 }} />
+              </div>
+
+              {/* Rows */}
+              {filtered.map((link, i) => (
+                <div
+                  key={link.id}
+                  style={{ borderBottom: i < filtered.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+                >
+                  <LinkCard
+                    link={link}
+                    onEdit={() => setEditLink(link)}
+                    onDeleted={fetchLinks}
+                    showToast={showToast}
+                  />
+                </div>
               ))}
             </div>
-
-            {/* Rows */}
-            {filtered.map((link, i) => (
-              <div
-                key={link.id}
-                style={{ borderBottom: i < filtered.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
-              >
-                <LinkCard
-                  link={link}
-                  onEdit={() => setEditLink(link)}
-                  onDeleted={fetchLinks}
-                  showToast={showToast}
-                />
-              </div>
-            ))}
           </div>
         )}
       </div>
