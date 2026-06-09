@@ -291,12 +291,13 @@ export default function PhoneInput({ onChange, required }: Props) {
         <div className="flex items-center flex-1 px-3 gap-2">
           <span
             style={{
-              color: "rgba(255,255,255,0.35)",
-              fontSize: 14,
-              fontWeight: 500,
+              color: "rgba(255,255,255,0.5)",
+              fontSize: 16,
+              fontWeight: 400,
               userSelect: "none",
               flexShrink: 0,
               fontFamily: "'Instrument Sans', sans-serif",
+              lineHeight: 1,
             }}
           >
             {selected.dial}
