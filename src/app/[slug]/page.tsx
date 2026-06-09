@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import PhoneInput from "@/components/PhoneInput";
 import EmailInput from "@/components/EmailInput";
 import CornerFrame from "@/components/CornerFrame";
@@ -14,6 +14,90 @@ type LinkData = {
   destination_url: string;
   slug: string;
 };
+
+const PLAYER_ID = "ifr_68223ee79a40b1a0cd9a0cfa";
+const EMBED_URL = `https://scripts.converteai.net/2fe3fa7a-4b6e-44f7-be18-0c3cce42c4c0/players/68223ee79a40b1a0cd9a0cfa/v4/embed.html`;
+
+function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    // Load converteai SDK
+    if (!document.querySelector(`script[src*="smartplayer-wc"]`)) {
+      const s = document.createElement("script");
+      s.src = "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+    // Preload links
+    const preloads = [
+      { href: `${EMBED_URL}`, as: undefined },
+      { href: `https://scripts.converteai.net/2fe3fa7a-4b6e-44f7-be18-0c3cce42c4c0/players/68223ee79a40b1a0cd9a0cfa/v4/player.js`, as: "script" },
+      { href: "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js", as: "script" },
+    ];
+    preloads.forEach(({ href, as }) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const l = document.createElement("link");
+      l.rel = "preload";
+      l.href = href;
+      if (as) l.setAttribute("as", as);
+      document.head.appendChild(l);
+    });
+  }, []);
+
+  function loadIframe(e: React.SyntheticEvent<HTMLIFrameElement>) {
+    const iframe = e.currentTarget;
+    iframe.onload = null;
+    const search = typeof window !== "undefined" ? (window.location.search || "?") : "?";
+    const vl = typeof window !== "undefined" ? encodeURIComponent(window.location.href) : "";
+    iframe.src = `${EMBED_URL}${search}&vl=${vl}`;
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
+      {/* Video player */}
+      <div id={`${PLAYER_ID}_wrapper`} style={{ margin: "0 auto", width: "100%", maxWidth: 400 }}>
+        <div style={{ position: "relative", paddingTop: "177.77777777777777%", width: "100%" }}>
+          <iframe
+            ref={iframeRef}
+            id={PLAYER_ID}
+            frameBorder={0}
+            allowFullScreen
+            src="about:blank"
+            onLoad={loadIframe}
+            referrerPolicy="origin"
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+          />
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
+        <a
+          href={destinationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-gold w-full py-4 text-base font-bold text-center rounded-xl"
+        >
+          Quero receber o convite
+        </a>
+        <a
+          href={destinationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-4 text-base font-semibold text-center rounded-xl transition-colors"
+          style={{
+            background: "transparent",
+            border: "1px solid #FFFFFF13",
+            color: "rgba(255,255,255,0.6)",
+          }}
+        >
+          Não quero
+        </a>
+      </div>
+    </div>
+  );
+}
 
 export default function CapturePage() {
   const { slug } = useParams<{ slug: string }>();
@@ -121,9 +205,6 @@ export default function CapturePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Erro ao salvar dados");
       setDone(true);
-      setTimeout(() => {
-        window.location.href = linkData.destination_url;
-      }, 1800);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ocorreu um erro. Tente novamente.");
     } finally {
@@ -160,36 +241,8 @@ export default function CapturePage() {
     );
   }
 
-  if (done) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-4 animate-fade-in">
-        <div
-          className="w-20 h-20 rounded-3xl flex items-center justify-center"
-          style={{
-            background: "rgba(34,197,94,0.1)",
-            border: "1px solid rgba(34,197,94,0.2)",
-          }}
-        >
-          <CheckCircle2 size={36} className="text-green-400" />
-        </div>
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Perfeito!</h2>
-          <p className="text-white/50">Redirecionando você agora...</p>
-        </div>
-        <div className="flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full animate-pulse-slow"
-              style={{
-                background: "#ffe033",
-                animationDelay: `${i * 0.3}s`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    );
+  if (done && linkData) {
+    return <DoneScreen destinationUrl={linkData.destination_url} />;
   }
 
   return (
