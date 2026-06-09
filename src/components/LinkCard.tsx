@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Edit2, Users, Copy, Trash2, ExternalLink, MoreHorizontal } from "lucide-react";
+import { Edit2, Users, Copy, Trash2, ExternalLink, MoreHorizontal, CopyPlus } from "lucide-react";
 import type { ProductLink } from "@/lib/supabase";
 
 type Props = {
@@ -20,6 +20,7 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [duplicating, setDuplicating] = useState(false);
   const [toggling, setToggling] = useState(false);
   const [active, setActive] = useState(link.active ?? true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -66,6 +67,21 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
       showToast("Erro ao atualizar link", "error");
     } finally {
       setToggling(false);
+    }
+  }
+
+  async function handleDuplicate() {
+    setDuplicating(true);
+    setOpen(false);
+    try {
+      const res = await fetch(`/api/links/${link.id}`, { method: "POST" });
+      if (!res.ok) throw new Error();
+      showToast("Link duplicado!", "success");
+      onDeleted();
+    } catch {
+      showToast("Erro ao duplicar", "error");
+    } finally {
+      setDuplicating(false);
     }
   }
 
@@ -186,6 +202,15 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
             >
               <Copy size={14} />
               Copiar Link
+            </button>
+
+            <button
+              onClick={handleDuplicate}
+              disabled={duplicating}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+            >
+              <CopyPlus size={14} />
+              {duplicating ? "Duplicando..." : "Duplicar"}
             </button>
 
             <a

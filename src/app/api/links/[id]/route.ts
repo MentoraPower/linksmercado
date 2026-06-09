@@ -25,6 +25,57 @@ export async function PUT(
   return NextResponse.json({ link: data });
 }
 
+export async function POST(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const db = supabaseAdmin();
+
+  const { data: original, error: fetchErr } = await db
+    .from("product_links")
+    .select("*")
+    .eq("id", params.id)
+    .single();
+
+  if (fetchErr || !original) return NextResponse.json({ error: "Link não encontrado" }, { status: 404 });
+
+  // Find a unique copy name: "nome - cópia", "nome - cópia 1", etc.
+  const base = original.name.replace(/ - cópia(\s\d+)?$/, "");
+  const { data: existing } = await db
+    .from("product_links")
+    .select("name")
+    .ilike("name", `${base} - cópia%`);
+
+  let copyName = `${base} - cópia`;
+  if (existing && existing.length > 0) {
+    copyName = `${base} - cópia ${existing.length}`;
+  }
+
+  function nameToSlug(name: string) {
+    return name.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
+  }
+  function randSuffix(n = 4) {
+    return Array.from({ length: n }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join("");
+  }
+
+  let slug = nameToSlug(copyName) || randSuffix();
+  for (let i = 0; i < 5; i++) {
+    const { data: taken } = await db.from("product_links").select("id").eq("slug", slug).single();
+    if (!taken) break;
+    slug = nameToSlug(copyName) + "-" + randSuffix();
+  }
+
+  const { data, error } = await db
+    .from("product_links")
+    .insert({ name: copyName, destination_url: original.destination_url, slug, active: true })
+    .select()
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ link: data }, { status: 201 });
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }

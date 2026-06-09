@@ -48,6 +48,8 @@ export default function CapturePage() {
   useEffect(() => {
     if (!linkData) return;
     const watchId = linkData.id;
+
+    // Realtime (fires instantly when Supabase replication is configured)
     const channel = supabase
       .channel(`link-watch-${watchId}`)
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "product_links" }, (payload) => {
@@ -59,17 +61,23 @@ export default function CapturePage() {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "product_links" }, (payload) => {
         const updated = payload.new as { id: string; active: boolean };
         if (updated.id !== watchId) return;
-        if (updated.active === false) {
-          setDeactivated(true);
-          setLinkData(null);
-        } else {
-          setDeactivated(false);
-          setLinkData(prev => prev ? { ...prev, ...payload.new } : prev);
-        }
+        if (updated.active === false) { setDeactivated(true); setLinkData(null); }
+        else { setDeactivated(false); setLinkData(prev => prev ? { ...prev, ...payload.new } : prev); }
       })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [linkData?.id]);
+
+    // Polling fallback: checks every 4s in case Realtime doesn't fire
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/links?slug=${slug}`);
+        const d = await res.json();
+        if (!d.link) { setNotFound(true); setLinkData(null); }
+        else if (d.link.active === false) { setDeactivated(true); setLinkData(null); }
+      } catch { /* ignore */ }
+    }, 4000);
+
+    return () => { supabase.removeChannel(channel); clearInterval(interval); };
+  }, [linkData?.id, slug]);
 
   const handlePhoneChange = useCallback((v: string) => setPhone(v), []);
 
