@@ -28,6 +28,7 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
   const [dropPos, setDropPos] = useState({ top: 0, right: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
   const captureUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/${link.slug}`;
 
@@ -37,7 +38,10 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      const insideMenu = menuRef.current?.contains(target);
+      const insideDrop = dropRef.current?.contains(target);
+      if (!insideMenu && !insideDrop) {
         setOpen(false);
         setShowDeleteConfirm(false);
       }
@@ -169,6 +173,7 @@ export default function LinkCard({ link, onEdit, onDeleted, showToast }: Props) 
 
         {open && typeof document !== "undefined" && createPortal(
           <div
+            ref={dropRef}
             style={{
               position: "fixed",
               top: dropPos.top,
