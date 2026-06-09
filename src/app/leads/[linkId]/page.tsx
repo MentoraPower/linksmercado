@@ -71,13 +71,7 @@ export default function LeadsPage() {
       })
       .subscribe();
 
-    // Polling fallback every 3s
-    const interval = setInterval(() => fetchData(true), 3000);
-
-    return () => {
-      supabase.removeChannel(channel);
-      clearInterval(interval);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [fetchData, linkId]);
 
   useEffect(() => {
