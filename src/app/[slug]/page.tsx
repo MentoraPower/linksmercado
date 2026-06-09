@@ -141,33 +141,6 @@ export default function CapturePage() {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 px-6 py-16">
 
-      {/* Field alert banner */}
-      {fieldAlert.length > 0 && (
-        <div
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between gap-4 px-5 py-3.5"
-          style={{
-            background: "rgba(220,38,38,0.92)",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
-            borderBottom: "1px solid rgba(255,255,255,0.12)",
-          }}
-        >
-          <span className="text-white text-sm font-medium">
-            Preencha os campos obrigatórios:{" "}
-            <span className="font-bold">{fieldAlert.join(", ")}</span>
-          </span>
-          <button
-            type="button"
-            onClick={() => setFieldAlert([])}
-            className="shrink-0 text-white/70 hover:text-white transition-colors"
-            style={{ lineHeight: 1 }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
-      )}
 
       {linkData && (
         <p className="text-center text-sm font-semibold mb-6" style={{ letterSpacing: "0.04em" }}>
@@ -205,6 +178,27 @@ export default function CapturePage() {
           <div>
             <PhoneInput onChange={(v) => { handlePhoneChange(v); setFieldAlert([]); }} />
           </div>
+
+          {fieldAlert.length > 0 && (
+            <div
+              className="flex items-center justify-between gap-3 rounded-xl px-4 py-3"
+              style={{ background: "rgba(220,38,38,0.12)", border: "1px solid rgba(220,38,38,0.3)" }}
+            >
+              <p className="text-sm font-medium" style={{ color: "#fca5a5" }}>
+                Preencha: <span className="font-bold">{fieldAlert.join(", ")}</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setFieldAlert([])}
+                className="shrink-0"
+                style={{ color: "rgba(252,165,165,0.6)", lineHeight: 1 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {error && <p className="text-sm text-red-400 text-center">{error}</p>}
 
