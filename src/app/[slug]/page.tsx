@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import PhoneInput from "@/components/PhoneInput";
+import EmailInput from "@/components/EmailInput";
 import CornerFrame from "@/components/CornerFrame";
 
 type LinkData = {
@@ -166,12 +167,9 @@ export default function CapturePage() {
           </div>
 
           <div>
-            <input
-              className="glass-input"
-              placeholder="Seu melhor email"
-              type="email"
+            <EmailInput
               value={email}
-              onChange={(e) => { setEmail(e.target.value); setFieldAlert([]); }}
+              onChange={(v) => { setEmail(v); setFieldAlert([]); }}
             />
           </div>
 
