@@ -39,7 +39,7 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
-      <div style={{ margin: "0 auto", width: "100%", maxWidth: 400 }}>
+      <div style={{ margin: "0 auto", width: "90%", maxWidth: 380, borderRadius: 16, overflow: "hidden" }}>
         <div style={{ position: "relative", paddingTop: "177.77777777777777%" }}>
           <iframe
             ref={iframeRef}
@@ -48,7 +48,7 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
             allowFullScreen
             allow="autoplay; fullscreen"
             referrerPolicy="origin"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
+            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", borderRadius: 16 }}
           />
         </div>
       </div>
