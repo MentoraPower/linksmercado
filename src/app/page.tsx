@@ -48,7 +48,7 @@ export default function Dashboard() {
     <PasswordGate>
     <div className="relative z-10 min-h-screen">
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-6 pt-10 pb-6">
+      <div className="w-full px-6 pt-10 pb-6">
         <div className="flex items-center gap-3 mb-8">
           <div className="relative flex-1">
             <Search
