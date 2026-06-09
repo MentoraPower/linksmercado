@@ -176,7 +176,7 @@ export default function CapturePage() {
           </div>
 
           <div>
-            <PhoneInput onChange={(v) => { handlePhoneChange(v); setFieldAlert([]); }} />
+            <PhoneInput onChange={handlePhoneChange} />
           </div>
 
           {fieldAlert.length > 0 && (

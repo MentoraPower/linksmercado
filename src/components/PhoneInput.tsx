@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import * as Flags from "country-flag-icons/react/3x2";
 
 type Country = { name: string; code: string; dial: string };
@@ -223,10 +223,12 @@ export default function PhoneInput({ onChange, required }: Props) {
   const dropRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onChangeRef = useRef(onChange);
+  useLayoutEffect(() => { onChangeRef.current = onChange; });
 
   useEffect(() => {
-    onChange(localNum ? `${selected.dial} ${localNum}` : "");
-  }, [selected, localNum, onChange]);
+    onChangeRef.current(localNum ? `${selected.dial} ${localNum}` : "");
+  }, [selected, localNum]);
 
   useEffect(() => {
     if (open) setTimeout(() => searchRef.current?.focus(), 50);
