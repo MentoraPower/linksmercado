@@ -4,9 +4,9 @@ const C = "1.5px solid rgba(255,224,51,0.55)";
 const R = 5;
 const S = 32;
 
-export default function CornerFrame({ children, className }: { children: React.ReactNode; className?: string }) {
+export default function CornerFrame({ children, className, style }: { children: React.ReactNode; className?: string; style?: React.CSSProperties }) {
   return (
-    <div className={`relative ${className ?? ""}`}>
+    <div className={`relative ${className ?? ""}`} style={style}>
       {/* top-left */}
       <div style={{ position: "absolute", top: 0, left: 0, width: S, height: S, borderTop: C, borderLeft: C, borderRadius: `${R}px 0 0 0`, pointerEvents: "none" }} />
       {/* top-right */}

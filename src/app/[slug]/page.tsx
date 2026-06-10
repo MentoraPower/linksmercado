@@ -54,10 +54,18 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
-      <vturb-smartplayer
-        id="vid-6a29a934e4a5fe038f632ee3"
-        style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: 400 }}
-      />
+      <CornerFrame style={{ width: "100%", maxWidth: 400 }}>
+        <div style={{
+          borderRadius: 20,
+          overflow: "hidden",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}>
+          <vturb-smartplayer
+            id="vid-6a29a934e4a5fe038f632ee3"
+            style={{ display: "block", width: "100%" }}
+          />
+        </div>
+      </CornerFrame>
 
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
         <button
