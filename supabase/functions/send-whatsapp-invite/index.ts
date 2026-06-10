@@ -28,6 +28,9 @@ Deno.serve(async (req) => {
     const digits = String(phone).replace(/\D/g, "");
     const formatted = digits.startsWith("55") ? digits : `55${digits}`;
 
+    // Aguarda 1 minuto antes de disparar
+    await new Promise((resolve) => setTimeout(resolve, 60_000));
+
     const payload: Record<string, unknown> = {
       phone: formatted,
       templateId: TEMPLATE_ID,

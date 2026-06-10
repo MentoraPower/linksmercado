@@ -47,12 +47,9 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
 
     window.open(destinationUrl, "_blank", "noopener,noreferrer");
 
-    // Dispara o template 1 minuto após o clique
-    setTimeout(() => {
-      supabase.functions.invoke("send-whatsapp-invite", {
-        body: { phone: leadPhone, name: leadName.trim() },
-      }).catch(() => {});
-    }, 60_000);
+    supabase.functions.invoke("send-whatsapp-invite", {
+      body: { phone: leadPhone, name: leadName.trim() },
+    }).catch(() => {});
   }
 
   return (
