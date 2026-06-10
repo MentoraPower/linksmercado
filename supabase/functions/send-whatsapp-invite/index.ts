@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const payload: Record<string, unknown> = {
       phone: formatted,
       templateId: TEMPLATE_ID,
-      bodyParameters: name ? [{ text: String(name), type: "text" }] : [],
+      bodyParameters: name ? [{ text: String(name).trim(), type: "text" }] : [],
       headerParameters: [],
       urlButtonParameters: [],
     };

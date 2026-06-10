@@ -30,7 +30,7 @@ type DoneScreenProps = {
 };
 
 function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
-  const [sending, setSending] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   useEffect(() => {
     if (!document.querySelector(`script[src*="6a29a934e4a5fe038f632ee3/v4/player.js"]`)) {
@@ -41,22 +41,18 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
     }
   }, []);
 
-  async function handleAccept() {
-    if (sending) return;
-    setSending(true);
+  function handleAccept() {
+    if (clicked) return;
+    setClicked(true);
 
-    // Fire and forget — open destination regardless of API result
     window.open(destinationUrl, "_blank", "noopener,noreferrer");
 
-    try {
-      await supabase.functions.invoke("send-whatsapp-invite", {
-        body: { phone: leadPhone, name: leadName },
-      });
-    } catch {
-      // silent — user already navigated
-    } finally {
-      setSending(false);
-    }
+    // Dispara o template 1 minuto após o clique
+    setTimeout(() => {
+      supabase.functions.invoke("send-whatsapp-invite", {
+        body: { phone: leadPhone, name: leadName.trim() },
+      }).catch(() => {});
+    }, 60_000);
   }
 
   return (
@@ -69,10 +65,10 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
         <button
           onClick={handleAccept}
-          disabled={sending}
+          disabled={clicked}
           className="btn-gold w-full py-4 text-base font-bold text-center rounded-xl"
         >
-          {sending ? "Enviando..." : "Quero receber o convite"}
+          Quero receber o convite
         </button>
         <a
           href={destinationUrl}
