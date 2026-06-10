@@ -67,23 +67,23 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
         </div>
       </CornerFrame>
 
-      <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
-        <button
-          onClick={handleAccept}
-          disabled={clicked}
-          className="btn-gold w-full py-4 text-base font-bold text-center rounded-xl"
-        >
-          Quero receber o convite
-        </button>
+      <div className="flex flex-row gap-3 w-full" style={{ maxWidth: 400 }}>
         <a
           href={destinationUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-4 text-base font-semibold text-center rounded-xl"
+          className="flex-1 py-4 text-sm font-semibold text-center rounded-xl"
           style={{ background: "transparent", border: "1px solid #FFFFFF13", color: "rgba(255,255,255,0.6)" }}
         >
           Não quero
         </a>
+        <button
+          onClick={handleAccept}
+          disabled={clicked}
+          className="btn-gold flex-1 py-4 text-sm font-bold text-center rounded-xl"
+        >
+          Quero receber o convite
+        </button>
       </div>
     </div>
   );
