@@ -1,12 +1,20 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import PhoneInput from "@/components/PhoneInput";
 import EmailInput from "@/components/EmailInput";
 import CornerFrame from "@/components/CornerFrame";
 import { supabase } from "@/lib/supabase";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "vturb-smartplayer": React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    }
+  }
+}
 
 type LinkData = {
   id: string;
@@ -15,43 +23,22 @@ type LinkData = {
   slug: string;
 };
 
-const PLAYER_ID = "ifr_68223ee79a40b1a0cd9a0cfa";
-const EMBED_URL = `https://scripts.converteai.net/2fe3fa7a-4b6e-44f7-be18-0c3cce42c4c0/players/68223ee79a40b1a0cd9a0cfa/v4/embed.html`;
-
 function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
   useEffect(() => {
-    // SDK
-    if (!document.querySelector(`script[src*="smartplayer-wc/v4/sdk"]`)) {
+    if (!document.querySelector(`script[src*="6a29a934e4a5fe038f632ee3/v4/player.js"]`)) {
       const s = document.createElement("script");
-      s.src = "https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js";
+      s.src = "https://scripts.converteai.net/2fe3fa7a-4b6e-44f7-be18-0c3cce42c4c0/players/6a29a934e4a5fe038f632ee3/v4/player.js";
       s.async = true;
       document.head.appendChild(s);
-    }
-    // Set iframe src directly — more reliable than onLoad in React
-    if (iframeRef.current) {
-      const search = window.location.search || "?";
-      const vl = encodeURIComponent(window.location.href);
-      iframeRef.current.src = `${EMBED_URL}${search}&vl=${vl}&autoplay=1`;
     }
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
-      <div style={{ margin: "0 auto", width: "90%", maxWidth: 380, borderRadius: 16, overflow: "hidden" }}>
-        <div style={{ position: "relative", paddingTop: "177.77777777777777%" }}>
-          <iframe
-            ref={iframeRef}
-            id={PLAYER_ID}
-            frameBorder={0}
-            allowFullScreen
-            allow="autoplay; fullscreen"
-            referrerPolicy="origin"
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none", borderRadius: 16 }}
-          />
-        </div>
-      </div>
+      <vturb-smartplayer
+        id="vid-6a29a934e4a5fe038f632ee3"
+        style={{ display: "block", margin: "0 auto", width: "100%", maxWidth: 400 }}
+      />
 
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
         <a
