@@ -23,7 +23,15 @@ type LinkData = {
   slug: string;
 };
 
-function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
+type DoneScreenProps = {
+  destinationUrl: string;
+  leadName: string;
+  leadPhone: string;
+};
+
+function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
+  const [sending, setSending] = useState(false);
+
   useEffect(() => {
     if (!document.querySelector(`script[src*="6a29a934e4a5fe038f632ee3/v4/player.js"]`)) {
       const s = document.createElement("script");
@@ -33,6 +41,24 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
     }
   }, []);
 
+  async function handleAccept() {
+    if (sending) return;
+    setSending(true);
+
+    // Fire and forget — open destination regardless of API result
+    window.open(destinationUrl, "_blank", "noopener,noreferrer");
+
+    try {
+      await supabase.functions.invoke("send-whatsapp-invite", {
+        body: { phone: leadPhone, name: leadName },
+      });
+    } catch {
+      // silent — user already navigated
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
       <vturb-smartplayer
@@ -41,14 +67,13 @@ function DoneScreen({ destinationUrl }: { destinationUrl: string }) {
       />
 
       <div className="flex flex-col gap-3 w-full" style={{ maxWidth: 400 }}>
-        <a
-          href={destinationUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={handleAccept}
+          disabled={sending}
           className="btn-gold w-full py-4 text-base font-bold text-center rounded-xl"
         >
-          Quero receber o convite
-        </a>
+          {sending ? "Enviando..." : "Quero receber o convite"}
+        </button>
         <a
           href={destinationUrl}
           target="_blank"
@@ -78,10 +103,14 @@ export default function CapturePage() {
   const [error, setError] = useState("");
   const [fieldAlert, setFieldAlert] = useState<string[]>([]);
 
-  // Restore done state on refresh
+  // Restore done state (and lead data) on refresh
   useEffect(() => {
     const saved = sessionStorage.getItem(`done_${slug}`);
-    if (saved) setDone(true);
+    if (saved) {
+      setDone(true);
+      setName(sessionStorage.getItem(`lead_name_${slug}`) ?? "");
+      setPhone(sessionStorage.getItem(`lead_phone_${slug}`) ?? "");
+    }
   }, [slug]);
 
   useEffect(() => {
@@ -174,8 +203,13 @@ export default function CapturePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Erro ao salvar dados");
-      setDone(true);
+
+      // Persist lead data so DoneScreen works after refresh
       sessionStorage.setItem(`done_${slug}`, "1");
+      sessionStorage.setItem(`lead_name_${slug}`, name.trim());
+      sessionStorage.setItem(`lead_phone_${slug}`, phone.trim());
+
+      setDone(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Ocorreu um erro. Tente novamente.");
     } finally {
@@ -213,12 +247,17 @@ export default function CapturePage() {
   }
 
   if (done && linkData) {
-    return <DoneScreen destinationUrl={linkData.destination_url} />;
+    return (
+      <DoneScreen
+        destinationUrl={linkData.destination_url}
+        leadName={name}
+        leadPhone={phone}
+      />
+    );
   }
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative z-10 px-6 py-16">
-
 
       {linkData && (
         <p className="text-center text-sm font-semibold mb-6" style={{ letterSpacing: "0.04em" }}>
