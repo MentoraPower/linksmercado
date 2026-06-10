@@ -54,7 +54,7 @@ function DoneScreen({ destinationUrl, leadName, leadPhone }: DoneScreenProps) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 gap-6">
-      <CornerFrame style={{ width: "100%", maxWidth: 400 }}>
+      <CornerFrame style={{ width: "85%", maxWidth: 400 }}>
         <div style={{
           borderRadius: 20,
           overflow: "hidden",
